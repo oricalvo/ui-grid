@@ -203,6 +203,7 @@
 
             if (grid.options.enableColumnResizing) {
               var columnResizerElm = $templateCache.get('ui-grid/columnResizer');
+              var resizersScope = null;
 
               var rtlMultiplier = 1;
               //when in RTL mode reverse the direction using the rtlMultiplier and change the position to left
@@ -214,6 +215,11 @@
               var displayResizers = function(){
 
                 // remove any existing resizers.
+                if (resizersScope) {
+                  resizersScope.$destroy();
+                  resizersScope = null;
+                }
+
                 var resizers = $elm[0].getElementsByClassName('ui-grid-column-resizer');
                 for ( var i = 0; i < resizers.length; i++ ){
                   angular.element(resizers[i]).remove();
@@ -229,7 +235,8 @@
                   resizerLeft.attr('position', 'left');
 
                   $elm.prepend(resizerLeft);
-                  $compile(resizerLeft)($scope);
+                  resizersScope = resizersScope || $scope.$new();
+                  $compile(resizerLeft)(resizersScope);
                 }
 
                 // Don't append the right resizer if this column has resizing disabled
@@ -238,7 +245,8 @@
                   resizerRight.attr('position', 'right');
 
                   $elm.append(resizerRight);
-                  $compile(resizerRight)($scope);
+                  resizersScope = resizersScope || $scope.$new();
+                  $compile(resizerRight)(resizersScope);
                 }
               };
 
